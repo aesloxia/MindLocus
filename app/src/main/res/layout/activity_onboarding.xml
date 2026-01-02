@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Welcome to MindLocus"
+                android:text="@string/welcome_title"
                 android:textAppearance="?attr/textAppearanceHeadlineLarge"
                 android:textStyle="bold"
                 android:gravity="center"/>
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="Your physical key to digital focus.\nLet's get you set up in a few seconds."
+                android:text="@string/welcome_subtitle"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:textColor="?android:attr/textColorSecondary" />
         </LinearLayout>
@@ -56,82 +56,166 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="Grant Permissions"
-                android:textAppearance="?attr/textAppearanceHeadlineMedium"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center"
-                android:text="MindLocus needs these to monitor and block distracting apps effectively."
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textColor="?android:attr/textColorSecondary" />
-
-            <com.google.android.material.card.MaterialCardView
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutlineVariant">
+                android:layout_height="match_parent">
 
-                <androidx.core.widget.NestedScrollView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <LinearLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/grant_permissions"
+                        android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Necessary Permissions"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorPrimary" />
+
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="8dp">
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="?attr/colorOutlineVariant">
 
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchUsageStats"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="12dp"
-                            android:text="Usage Access" />
+                            android:orientation="vertical"
+                            android:padding="8dp">
 
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchOverlay"
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchUsageStats"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="12dp"
+                                android:text="@string/perm_usage_stats" />
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchOverlay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="12dp"
+                                android:text="@string/perm_overlay" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="Optional Enhancements"
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="?attr/colorOutlineVariant">
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="12dp"
-                            android:text="Overlay Access" />
+                            android:orientation="vertical"
+                            android:padding="8dp">
 
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchNotifications"
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchNotifications"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="12dp"
+                                android:text="@string/perm_notifications" />
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchAdmin"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="12dp"
+                                android:text="@string/perm_admin" />
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchBattery"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="12dp"
+                                android:text="Ignore Battery Optimizations" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Manufacturer Specific (Only for certain devices) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/manufacturerCardOnboarding"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="?attr/colorOutlineVariant"
+                        android:visibility="gone">
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="12dp"
-                            android:text="Notification Blocker" />
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchAdmin"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="12dp"
-                            android:text="Uninstall Protection" />
+                            <TextView
+                                android:id="@+id/tvManufacturerTitleOnboarding"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Manufacturer Fixes"
+                                android:textAppearance="?attr/textAppearanceTitleSmall"
+                                android:textColor="?attr/colorError" />
 
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchBattery"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="12dp"
-                            android:text="Ignore Battery Optimizations" />
-                    </LinearLayout>
-                </androidx.core.widget.NestedScrollView>
-            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/manufacturer_instructions"
+                                android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnFixAutostartOnboarding"
+                                style="@style/Widget.Material3.Button.TonalButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="@string/btn_fix_autostart"
+                                android:visibility="gone" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnFixPopupsOnboarding"
+                                style="@style/Widget.Material3.Button.TonalButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/btn_fix_popups"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                    
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
         </LinearLayout>
 
         <!-- Step 2: Choose Apps -->
@@ -140,20 +224,31 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Choose Apps to Block"
-                android:textAppearance="?attr/textAppearanceHeadlineMedium"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_onboarding_apps" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/choose_apps"
+                    android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/searchLayout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="Search apps..."
+                android:layout_marginTop="16dp"
+                android:hint="@string/search_apps_hint"
                 app:startIconDrawable="@android:drawable/ic_menu_search">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -184,14 +279,14 @@
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginTop="48dp"
-                android:src="@drawable/ic_launcher_foreground"/>
+                android:src="@drawable/ic_qr_code" />
 
             <TextView
                 android:id="@+id/tvTagTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Register Your Key"
+                android:text="@string/register_key_title"
                 android:textAppearance="?attr/textAppearanceHeadlineMedium"
                 android:textStyle="bold" />
 
@@ -201,7 +296,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="Scan an NFC tag or a QR code to act as your physical lock. This can also be skipped."
+                android:text="@string/register_key_subtitle"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:textColor="?android:attr/textColorSecondary" />
 
@@ -211,7 +306,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="48dp"
-                android:text="Scan QR Instead" />
+                android:text="@string/btn_scan_qr_instead" />
         </LinearLayout>
 
     </ViewFlipper>
@@ -227,7 +322,7 @@
             android:id="@+id/btnNext"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:text="Get Started" />
+            android:text="@string/btn_get_started" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -241,7 +336,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Back"
+                android:text="@string/btn_back"
                 android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
@@ -250,7 +345,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Skip for now"
+                android:text="@string/btn_skip"
                 android:visibility="gone" />
 
         </LinearLayout>

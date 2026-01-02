@@ -1,4 +1,67 @@
 <resources>
     <string name="app_name">MindLocus</string>
     <string name="device_admin_description">Enabling this prevents the app from being uninstalled without your consent, helping you stay focused.</string>
+    <string name="accessibility_service_description">Used to instantly detect and block distracting apps before they appear on screen.</string>
+    
+    <!-- Main Activity -->
+    <string name="status_active">Blocking Active</string>
+    <string name="status_inactive">Blocking Inactive</string>
+    <string name="status_subtitle_active">Your space is protected</string>
+    <string name="status_subtitle_ready">Ready to lock</string>
+    <string name="status_subtitle_no_tags">Add keys in settings to start</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="permissions_reliability">Permissions &amp; Reliability</string>
+    <string name="perm_usage_stats">Usage Stats Permission</string>
+    <string name="perm_overlay">Overlay Permission</string>
+    <string name="perm_notifications">Notification Blocker</string>
+    <string name="perm_battery">Background Running (Battery)</string>
+    <string name="perm_admin">Uninstall Protection (Admin)</string>
+    <string name="manufacturer_optimization">Manufacturer Optimization</string>
+    <string name="manufacturer_instructions">Your device has specific restrictions. Please enable the following:</string>
+    <string name="btn_fix_autostart">Enable Auto-start</string>
+    <string name="btn_fix_popups">Enable Background Pop-ups</string>
+    <string name="debug_development">Debug / Development</string>
+    <string name="btn_reset_onboarding">Reset &amp; Show Welcome</string>
+    <string name="btn_debug_toggle">Toggle Blocking (No Tag)</string>
+    
+    <!-- Onboarding -->
+    <string name="welcome_title">Welcome to MindLocus</string>
+    <string name="welcome_subtitle">Your physical key to digital focus.\nLet\'s get you set up in a few seconds.</string>
+    <string name="grant_permissions">Grant Permissions</string>
+    <string name="perm_instructions">MindLocus needs these to monitor and block distracting apps effectively.</string>
+    <string name="choose_apps">Choose Apps to Block</string>
+    <string name="choose_apps_subtitle">Select apps that usually distract you. You can skip this and add them later in settings.</string>
+    <string name="search_apps_hint">Search apps...</string>
+    <string name="register_key_title">Register Your Key</string>
+    <string name="register_key_subtitle">Scan an NFC tag or a QR code to act as your physical lock. This can also be skipped.</string>
+    <string name="btn_scan_qr_instead">Scan QR Instead</string>
+    <string name="btn_get_started">Get Started</string>
+    <string name="btn_continue">Continue</string>
+    <string name="btn_back">Back</string>
+    <string name="btn_skip">Skip for now</string>
+    <string name="btn_finish">Finish</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="blocking_keys">Blocking Keys (NFC/QR)</string>
+    <string name="btn_register_nfc">Register NFC Tag</string>
+    <string name="btn_register_qr">Register QR Code</string>
+    <string name="blocked_apps">Blocked Apps</string>
+    
+    <!-- Block Activity -->
+    <string name="mindful_moment">Mindful Moment</string>
+    <string name="block_message">This app is blocked to help you stay focused.\nTake a moment for yourself.</string>
+    
+    <!-- Toasts & Messages -->
+    <string name="toast_settings_locked">End focus session to access settings</string>
+    <string name="toast_scan_qr_locked">End focus session to scan QR</string>
+    <string name="toast_register_tags_locked">End focus session to register tags</string>
+    <string name="toast_unknown_key">Unknown Key</string>
+    <string name="toast_key_registered">Key Registered Successfully!</string>
+    <string name="toast_tag_waiting">Waiting for Tag...</string>
+    <string name="toast_tag_tap_instruction">Tap NFC or scan QR to register</string>
+    <string name="toast_permissions_needed">Permissions needed for full protection</string>
+    <string name="toast_focus_on">Focus Mode ON</string>
+    <string name="toast_focus_off">Focus Mode OFF</string>
 </resources>

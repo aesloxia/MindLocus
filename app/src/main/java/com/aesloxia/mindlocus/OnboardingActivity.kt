@@ -5,7 +5,6 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.nfc.NfcAdapter
@@ -57,6 +56,7 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun setupStep1() {
+        // Universal Permissions
         binding.switchUsageStats.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked && !hasUsageStatsPermission()) startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
@@ -66,9 +66,7 @@ class OnboardingActivity : AppCompatActivity() {
             }
         }
         binding.switchNotifications.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked && !isNotificationServiceEnabled()) {
-                startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
-            }
+            if (isChecked && !isNotificationServiceEnabled()) startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
         }
         binding.switchAdmin.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked && !isAdminEnabled()) {
@@ -81,10 +79,49 @@ class OnboardingActivity : AppCompatActivity() {
         }
         binding.switchBattery.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked && !isIgnoringBatteryOptimizations()) {
-                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName"))
-                startActivity(intent)
+                startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName")))
             }
         }
+
+        // Manufacturer Logic
+        val brand = Build.MANUFACTURER.lowercase()
+        if (brand.contains("xiaomi")) {
+            binding.manufacturerCardOnboarding.visibility = View.VISIBLE
+            binding.btnFixAutostartOnboarding.visibility = View.VISIBLE
+            binding.btnFixPopupsOnboarding.visibility = View.VISIBLE
+            
+            binding.btnFixAutostartOnboarding.setOnClickListener {
+                try {
+                    val intent = Intent().apply {
+                        component = ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
+                    }
+                    startActivity(intent)
+                } catch (e: Exception) { openAppSettings() }
+            }
+            
+            binding.btnFixPopupsOnboarding.setOnClickListener {
+                try {
+                    val intent = Intent("miui.intent.action.APP_PERM_EDITOR").apply {
+                        setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity")
+                        putExtra("extra_pkgname", packageName)
+                    }
+                    startActivity(intent)
+                } catch (e: Exception) { openAppSettings() }
+            }
+        } else if (brand.contains("samsung") || brand.contains("oppo") || brand.contains("huawei")) {
+            binding.manufacturerCardOnboarding.visibility = View.VISIBLE
+            binding.btnFixAutostartOnboarding.visibility = View.VISIBLE
+            binding.btnFixAutostartOnboarding.text = "Open Battery/Startup Settings"
+            binding.btnFixAutostartOnboarding.setOnClickListener {
+                try {
+                    startActivity(ManufacturerUtils.getBackgroundSettingsIntent(this))
+                } catch (e: Exception) { openAppSettings() }
+            }
+        }
+    }
+
+    private fun openAppSettings() {
+        startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
     }
 
     private fun isIgnoringBatteryOptimizations() = (getSystemService(POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(packageName)
@@ -96,7 +133,7 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun isAdminEnabled(): Boolean {
-        val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
         val cn = ComponentName(this, UninstallProtectionReceiver::class.java)
         return dpm.isAdminActive(cn)
     }
@@ -124,10 +161,15 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun handleNext() {
         when (binding.viewFlipper.displayedChild) {
-            0 -> moveNext(50, "Continue")
-            1 -> if (hasUsageStatsPermission() && Settings.canDrawOverlays(this) && isNotificationServiceEnabled()) moveNext(75, "Continue")
-                 else Toast.makeText(this, "Required permissions missing", Toast.LENGTH_SHORT).show()
-            2 -> { saveSelectedApps(); moveNext(100, "Finish") }
+            0 -> moveNext(50, getString(R.string.btn_continue))
+            1 -> {
+                if (hasUsageStatsPermission() && Settings.canDrawOverlays(this)) {
+                    moveNext(75, getString(R.string.btn_continue))
+                } else {
+                    Toast.makeText(this, "Required permissions (Usage and Overlay) missing", Toast.LENGTH_SHORT).show()
+                }
+            }
+            2 -> { saveSelectedApps(); moveNext(100, getString(R.string.btn_finish)) }
             3 -> finishOnboarding()
         }
     }
@@ -142,27 +184,30 @@ class OnboardingActivity : AppCompatActivity() {
     private fun handleBack() {
         if (binding.viewFlipper.displayedChild > 0) {
             binding.viewFlipper.showPrevious()
+            updateNavigationButtons()
             val (progress, text) = when (binding.viewFlipper.displayedChild) {
-                0 -> 25 to "Get Started"
-                1 -> 50 to "Continue"
-                2 -> 75 to "Continue"
-                else -> 100 to "Finish"
+                0 -> 25 to getString(R.string.btn_get_started)
+                1 -> 50 to getString(R.string.btn_continue)
+                2 -> 75 to getString(R.string.btn_continue)
+                else -> 100 to getString(R.string.btn_finish)
             }
             binding.onboardingProgress.progress = progress
             binding.btnNext.text = text
-            updateNavigationButtons()
         }
     }
 
     private fun handleSkip() {
-        if (binding.viewFlipper.displayedChild == 2) moveNext(100, "Finish")
-        else if (binding.viewFlipper.displayedChild == 3) finishOnboarding()
+        when (binding.viewFlipper.displayedChild) {
+            1 -> moveNext(75, getString(R.string.btn_continue)) // Skipping permissions
+            2 -> { saveSelectedApps(); moveNext(100, getString(R.string.btn_finish)) }
+            3 -> finishOnboarding()
+        }
     }
 
     private fun updateNavigationButtons() {
         val step = binding.viewFlipper.displayedChild
         binding.btnBack.visibility = if (step > 0) View.VISIBLE else View.GONE
-        binding.btnSkip.visibility = if (step == 2 || step == 3) View.VISIBLE else View.GONE
+        binding.btnSkip.visibility = if (step > 0) View.VISIBLE else View.GONE
     }
 
     private fun saveSelectedApps() { prefs.blockedApps = adapter.getSelectedPackages() }
@@ -197,7 +242,7 @@ class OnboardingActivity : AppCompatActivity() {
                     )
                     nfcAdapter?.enableForegroundDispatch(this, pendingIntent, null, null)
                 }
-            } catch (e: Exception) { /* NFC hardware issue */ }
+            } catch (e: Exception) { /* NFC issue */ }
         }
     }
 
@@ -219,9 +264,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        try {
-            nfcAdapter?.disableForegroundDispatch(this)
-        } catch (e: Exception) { /* NFC issue */ }
+        try { nfcAdapter?.disableForegroundDispatch(this) } catch (e: Exception) {}
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -240,8 +283,6 @@ class OnboardingActivity : AppCompatActivity() {
     private fun handleTagScanned(tagId: String) {
         if (binding.viewFlipper.displayedChild == 3) {
             prefs.addTag(tagId)
-            binding.ivTagIcon.setImageResource(android.R.drawable.checkbox_on_background)
-            binding.ivTagIcon.imageTintList = ContextCompat.getColorStateList(this, android.R.color.holo_green_dark)
             binding.tvTagTitle.text = "Tag Registered!"
             binding.tvTagSubtitle.text = "Ready to start focusing."
         }
