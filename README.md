@@ -8,6 +8,11 @@ I don't think there is any Android app which has physical blocking feature with 
 
 The concept is simple: you choose which apps distract you the most, and MindLocus prevents you from opening them unless you have your physical key. By requiring a physical action to unlock your phone's distractions, it forces a moment of mindfulness and makes it much harder to mindlessly scroll through social media or games.
 
+## Download
+
+You can download MindLocus app by clicking on Releases menu in repository, or by this link:
+https://github.com/aesloxia/MindLocus/releases/download/1.0.0/mindlocus_1.0.0.apk
+
 ## Getting Started
 
 To get the app running properly on your phone, follow these steps:
