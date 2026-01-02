@@ -14,13 +14,25 @@ class PreferenceManager(context: Context) {
         get() = prefs.getBoolean("is_blocking", false)
         set(value) = prefs.edit().putBoolean("is_blocking", value).apply()
 
-    var registeredTag: String?
-        get() = prefs.getString("registered_tag", null)
-        set(value) = prefs.edit().putString("registered_tag", value).apply()
+    var registeredTags: Set<String>
+        get() = prefs.getStringSet("registered_tags", emptySet()) ?: emptySet()
+        set(value) = prefs.edit().putStringSet("registered_tags", value).apply()
 
     var blockedApps: Set<String>
         get() = prefs.getStringSet("blocked_apps", emptySet()) ?: emptySet()
         set(value) = prefs.edit().putStringSet("blocked_apps", value).apply()
 
     fun isAppBlocked(packageName: String): Boolean = blockedApps.contains(packageName)
+    
+    fun addTag(tagId: String) {
+        val tags = registeredTags.toMutableSet()
+        tags.add(tagId)
+        registeredTags = tags
+    }
+
+    fun removeTag(tagId: String) {
+        val tags = registeredTags.toMutableSet()
+        tags.remove(tagId)
+        registeredTags = tags
+    }
 }

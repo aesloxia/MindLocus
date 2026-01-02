@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="Blocking Key"
+                android:text="Blocking Keys (NFC/QR)"
                 android:textAppearance="?attr/textAppearanceTitleMedium" />
 
             <com.google.android.material.card.MaterialCardView
@@ -50,30 +50,29 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="12dp">
 
-                    <TextView
-                        android:id="@+id/tvCurrentTag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Current Tag: None"
-                        android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnChangeTag"
-                        style="@style/Widget.Material3.Button.TonalButton"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvTags"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Register New NFC Tag" />
+                        android:nestedScrollingEnabled="false" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnChangeQR"
+                        android:id="@+id/btnRegisterTag"
                         style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Scan New QR Code" />
+                        android:text="Register NFC Tag" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRegisterQR"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Register QR Code" />
 
                 </LinearLayout>
 
@@ -85,6 +84,23 @@
                 android:layout_marginBottom="8dp"
                 android:text="Blocked Apps"
                 android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchLayout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:hint="Search apps..."
+                app:startIconDrawable="@android:drawable/ic_menu_search">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"

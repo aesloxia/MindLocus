@@ -7,23 +7,34 @@ import com.aesloxia.mindlocus.databinding.ItemAppBinding
 
 class AppAdapter : RecyclerView.Adapter<AppAdapter.AppViewHolder>() {
 
-    private var apps = listOf<AppInfo>()
+    private var allApps = listOf<AppInfo>()
+    private var displayedApps = listOf<AppInfo>()
 
     fun setApps(newApps: List<AppInfo>) {
-        apps = newApps
+        allApps = newApps
+        displayedApps = newApps
         notifyDataSetChanged()
     }
 
-    fun getSelectedPackages(): Set<String> = apps.filter { it.isSelected }.map { it.packageName }.toSet()
+    fun filter(query: String) {
+        displayedApps = if (query.isEmpty()) {
+            allApps
+        } else {
+            allApps.filter { it.name.contains(query, ignoreCase = true) || it.packageName.contains(query, ignoreCase = true) }
+        }
+        notifyDataSetChanged()
+    }
+
+    fun getSelectedPackages(): Set<String> = allApps.filter { it.isSelected }.map { it.packageName }.toSet()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
         val binding = ItemAppBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return AppViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: AppViewHolder, position: Int) = holder.bind(apps[position])
+    override fun onBindViewHolder(holder: AppViewHolder, position: Int) = holder.bind(displayedApps[position])
 
-    override fun getItemCount(): Int = apps.size
+    override fun getItemCount(): Int = displayedApps.size
 
     inner class AppViewHolder(private val binding: ItemAppBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(app: AppInfo) {

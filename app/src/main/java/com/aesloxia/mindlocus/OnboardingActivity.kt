@@ -15,6 +15,8 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,7 +32,7 @@ class OnboardingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOnboardingBinding
     private val adapter by lazy { AppAdapter() }
     private val prefs by lazy { PreferenceManager(this) }
-    private val nfcAdapter by lazy { NfcAdapter.getDefaultAdapter(this) }
+    private val nfcAdapter by lazy { try { NfcAdapter.getDefaultAdapter(this) } catch (e: Exception) { null } }
 
     private val qrScannerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -79,7 +81,8 @@ class OnboardingActivity : AppCompatActivity() {
         }
         binding.switchBattery.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked && !isIgnoringBatteryOptimizations()) {
-                startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName")))
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName"))
+                startActivity(intent)
             }
         }
     }
@@ -101,6 +104,15 @@ class OnboardingActivity : AppCompatActivity() {
     private fun setupStep2() {
         binding.rvApps.layoutManager = LinearLayoutManager(this)
         binding.rvApps.adapter = adapter
+        
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                adapter.filter(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         lifecycleScope.launch {
             adapter.setApps(AppUtils.getLockableApps(this@OnboardingActivity, prefs.blockedApps))
         }
@@ -114,7 +126,7 @@ class OnboardingActivity : AppCompatActivity() {
         when (binding.viewFlipper.displayedChild) {
             0 -> moveNext(50, "Continue")
             1 -> if (hasUsageStatsPermission() && Settings.canDrawOverlays(this) && isNotificationServiceEnabled()) moveNext(75, "Continue")
-                 else Toast.makeText(this, "Required permissions missing (Usage, Overlay, and Notification)", Toast.LENGTH_SHORT).show()
+                 else Toast.makeText(this, "Required permissions missing", Toast.LENGTH_SHORT).show()
             2 -> { saveSelectedApps(); moveNext(100, "Finish") }
             3 -> finishOnboarding()
         }
@@ -166,6 +178,7 @@ class OnboardingActivity : AppCompatActivity() {
         val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
         } else {
+            @Suppress("DEPRECATION")
             appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
         }
         return mode == AppOpsManager.MODE_ALLOWED
@@ -173,30 +186,60 @@ class OnboardingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (::binding.isInitialized) {
+            updateSwitchesQuietly()
+            try {
+                if (nfcAdapter?.isEnabled == true) {
+                    val intent = Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    val pendingIntent = android.app.PendingIntent.getActivity(
+                        this, 0, intent,
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) android.app.PendingIntent.FLAG_MUTABLE else 0
+                    )
+                    nfcAdapter?.enableForegroundDispatch(this, pendingIntent, null, null)
+                }
+            } catch (e: Exception) { /* NFC hardware issue */ }
+        }
+    }
+
+    private fun updateSwitchesQuietly() {
+        binding.switchUsageStats.setOnCheckedChangeListener(null)
+        binding.switchOverlay.setOnCheckedChangeListener(null)
+        binding.switchNotifications.setOnCheckedChangeListener(null)
+        binding.switchAdmin.setOnCheckedChangeListener(null)
+        binding.switchBattery.setOnCheckedChangeListener(null)
+
         binding.switchUsageStats.isChecked = hasUsageStatsPermission()
         binding.switchOverlay.isChecked = Settings.canDrawOverlays(this)
         binding.switchNotifications.isChecked = isNotificationServiceEnabled()
         binding.switchAdmin.isChecked = isAdminEnabled()
         binding.switchBattery.isChecked = isIgnoringBatteryOptimizations()
-        nfcAdapter?.enableForegroundDispatch(this, null, null, null)
+
+        setupStep1()
     }
 
     override fun onPause() {
         super.onPause()
-        nfcAdapter?.disableForegroundDispatch(this)
+        try {
+            nfcAdapter?.disableForegroundDispatch(this)
+        } catch (e: Exception) { /* NFC issue */ }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (NfcAdapter.ACTION_TAG_DISCOVERED == intent.action || NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
-            val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+            val tag: Tag? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+            }
             tag?.let { handleTagScanned(it.id.joinToString("") { b -> "%02x".format(b) }) }
         }
     }
 
     private fun handleTagScanned(tagId: String) {
         if (binding.viewFlipper.displayedChild == 3) {
-            prefs.registeredTag = tagId
+            prefs.addTag(tagId)
             binding.ivTagIcon.setImageResource(android.R.drawable.checkbox_on_background)
             binding.ivTagIcon.imageTintList = ContextCompat.getColorStateList(this, android.R.color.holo_green_dark)
             binding.tvTagTitle.text = "Tag Registered!"
