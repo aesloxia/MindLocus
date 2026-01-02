@@ -1,7 +1,6 @@
 package com.aesloxia.mindlocus
 
 import android.app.AppOpsManager
-import android.app.PendingIntent
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
@@ -77,14 +76,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupUI() {
         binding.btnScanQR.setOnClickListener {
             qrScannerLauncher.launch(Intent(this, QrScannerActivity::class.java))
-        }
-        
-        binding.btnDebugToggle.setOnClickListener { toggleBlocking() }
-        
-        binding.btnResetOnboarding.setOnClickListener { 
-            prefs.isFirstRun = true
-            startActivity(Intent(this, OnboardingActivity::class.java))
-            finish()
         }
 
         // Universal Permissions
@@ -263,7 +254,7 @@ class MainActivity : AppCompatActivity() {
             val nfc = nfcAdapter ?: return
             if (!nfc.isEnabled) return
             val intent = Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            val pendingIntent = PendingIntent.getActivity(this, 0, intent, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0)
+            val pendingIntent = android.app.PendingIntent.getActivity(this, 0, intent, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) android.app.PendingIntent.FLAG_MUTABLE else 0)
             nfc.enableForegroundDispatch(this, pendingIntent, null, null)
         } catch (e: Exception) {}
     }
